@@ -24,6 +24,9 @@ class ViewController: UIViewController
     var cancellable3: AnyObject!
     var cancellable4: AnyObject!
     
+    let selectionFeedbackGenerator = UISelectionFeedbackGenerator()
+    let buttonFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+    
     @IBOutlet weak var dataSizeSlider: UISlider!
     @IBOutlet weak var graphView: UIView!
     @IBOutlet weak var randomizeButton: UIButton!
@@ -135,7 +138,12 @@ class ViewController: UIViewController
     @IBAction func onDataSizeChanged(_ sender: UISlider)
     {
         let range = dataSizeMax - dataSizeMin
-        self.viewModel.dataSize = dataSizeMin + Int(sender.value * Float(range))
+        let clippedSize = dataSizeMin + Int(sender.value * Float(range))
+        if (viewModel.dataSize != clippedSize)
+        {
+            viewModel.dataSize = clippedSize
+            selectionFeedbackGenerator.selectionChanged()
+        }
     }
     
     @IBAction func onOrderChanged(_ sender: UISegmentedControl)
@@ -148,7 +156,9 @@ class ViewController: UIViewController
     
     @IBAction func onRandomizeButton(_ sender: UIButton)
     {
+        buttonFeedbackGenerator.prepare()
         self.viewModel.randomize()
+        buttonFeedbackGenerator.impactOccurred()
     }
     
     @IBAction func onBubbleSortButton(_ sender: CardButton)

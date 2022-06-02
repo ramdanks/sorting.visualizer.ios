@@ -10,7 +10,10 @@ import Foundation
 class ViewModel
 {
     public var dataSize: Int { didSet {
-        if (oldValue != dataSize) { generate() }
+        dataSource = []
+        dataSource.reserveCapacity(dataSize)
+        dataSource.append(contentsOf: 1...dataSize)
+        dataSourceToggleChanged = !dataSourceToggleChanged
     }}
     
     public var orderAscending: Bool = true
@@ -32,7 +35,7 @@ class ViewModel
     public init(dataSize: Int)
     {
         self.dataSize = dataSize
-        generate()
+        ({ self.dataSize = self.dataSize })()
     }
     
     public func randomize()
@@ -110,13 +113,5 @@ class ViewModel
         dataIndexAccessed = []
         dataIndexSwapped = []
         buttonInteractionEnable = true
-    }
-    
-    private func generate()
-    {
-        dataSource = []
-        dataSource.reserveCapacity(dataSize)
-        dataSource.append(contentsOf: 1...dataSize)
-        dataSourceToggleChanged = !dataSourceToggleChanged
     }
 }

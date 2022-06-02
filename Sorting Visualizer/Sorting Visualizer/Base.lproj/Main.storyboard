@@ -130,7 +130,7 @@
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="16"/>
                                             </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="bubble.left.and.bubble.right.fill" catalog="system"/>
+                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="quote.bubble.fill" catalog="system"/>
                                             <userDefinedRuntimeAttribute type="string" keyPath="title" value="Bubble"/>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
@@ -144,8 +144,8 @@
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="16"/>
                                             </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="rectangle.stack.fill" catalog="system"/>
-                                            <userDefinedRuntimeAttribute type="string" keyPath="title" value="Merge"/>
+                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="square.2.stack.3d.bottom.fill" catalog="system"/>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="title" value="Select"/>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="onMergeSortButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="kyy-RM-2qj"/>
@@ -178,8 +178,8 @@
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="16"/>
                                             </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="square.split.2x2.fill" catalog="system"/>
-                                            <userDefinedRuntimeAttribute type="string" keyPath="title" value="Heap"/>
+                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="rectangle.leadinghalf.inset.filled.arrow.leading" catalog="system"/>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="title" value="Insertion"/>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="onHeapSortButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="opu-DW-bww"/>
@@ -282,11 +282,11 @@
     <resources>
         <image name="arrow.down.square.fill" catalog="system" width="128" height="114"/>
         <image name="arrow.up.square.fill" catalog="system" width="128" height="114"/>
-        <image name="bubble.left.and.bubble.right.fill" catalog="system" width="128" height="97"/>
         <image name="hourglass" catalog="system" width="102" height="128"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
-        <image name="rectangle.stack.fill" catalog="system" width="128" height="122"/>
-        <image name="square.split.2x2.fill" catalog="system" width="128" height="114"/>
+        <image name="quote.bubble.fill" catalog="system" width="128" height="110"/>
+        <image name="rectangle.leadinghalf.inset.filled.arrow.leading" catalog="system" width="128" height="93"/>
+        <image name="square.2.stack.3d.bottom.fill" catalog="system" width="128" height="118"/>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

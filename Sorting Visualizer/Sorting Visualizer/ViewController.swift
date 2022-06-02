@@ -9,8 +9,9 @@ import UIKit
 
 class ViewController: UIViewController
 {
-    enum Sort: Int { case bubble = 0, merge = 1, heap = 2, quick = 3 }
+    enum Sort: Int { case bubble = 0, selection = 1, insertion = 2, quick = 3 }
     
+    var initState: Bool = true
     var viewModel: ViewModel!
     
     var sortRadioManager: RadioButtonManager!
@@ -23,6 +24,8 @@ class ViewController: UIViewController
     var cancellable2: AnyObject!
     var cancellable3: AnyObject!
     var cancellable4: AnyObject!
+    var cancellable5: AnyObject!
+    var cancellable6: AnyObject!
     
     let selectionFeedbackGenerator = UISelectionFeedbackGenerator()
     let buttonFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
@@ -41,7 +44,7 @@ class ViewController: UIViewController
     
     let neutralColor: UIColor   = .systemBlue
     let accessColor: UIColor    = .systemRed
-    let swapColor: UIColor      = .systemYellow
+    let setColor: UIColor      = .systemYellow
     let doneColor: UIColor      = .systemGreen
     
     override func viewDidLoad()
@@ -52,6 +55,25 @@ class ViewController: UIViewController
         self.viewModel = ViewModel(dataSize: dataSizeMin)
         self.sortRadioManager = RadioButtonManager([bubbleCardButton, mergeCardButton, heapCardButton, quickCardButton])
         
+        cancellable = self.viewModel.$dataSourceToggleChanged.sink(receiveValue: { [unowned self] _ in draw() })
+        
+        cancellable2 = self.viewModel.$dataIndexAccessed.sink(receiveValue: { [unowned self] in
+            setGraphBarColor($0, color: accessColor)
+        })
+        
+        cancellable3 = self.viewModel.$dataIndexSwapped.sink(receiveValue: { [unowned self] in
+            if (initState) { return }
+            setGraphBarColor([$0.0, $0.1], color: setColor)
+            let view0 = graphViews[$0.0]
+            let view1 = graphViews[$0.1]
+            DispatchQueue.main.async {
+                let view0Height = view0.frame.height
+                let view1Height = view1.frame.height
+                view0.constraints.first(where: { $0.firstAttribute == .height })?.constant = view1Height
+                view1.constraints.first(where: { $0.firstAttribute == .height })?.constant = view0Height
+            }
+        })
+        
         cancellable4 = self.viewModel.$buttonInteractionEnable.sink(receiveValue: { enable in
             DispatchQueue.main.async { [unowned self] in
                 dataSizeSlider.isEnabled    = enable
@@ -61,24 +83,29 @@ class ViewController: UIViewController
                 sortRadioManager.views.forEach { $0.view.isEnabled = enable }
             }
         })
-        cancellable = self.viewModel.$dataSourceToggleChanged.sink(receiveValue: { [unowned self] _ in draw() })
-        cancellable2 = self.viewModel.$dataIndexAccessed.sink(receiveValue: { [unowned self] in
-            // restore previously accessed data to unhighlighted
-            setGraphBarColor(viewModel.dataIndexAccessed, color: neutralColor)
-            setGraphBarColor($0, color: accessColor)
-        })
-        cancellable3 = self.viewModel.$dataIndexSwapped.sink(receiveValue: { [unowned self] in
-            if ($0.isEmpty) { return }
-            setGraphBarColor($0, color: swapColor)
-            let view0 = graphViews[$0[0]]
-            let view1 = graphViews[$0[1]]
+        
+        cancellable5 = self.viewModel.$dataIndexSetReference.sink(receiveValue: { [unowned self] in
+            if (initState) { return }
+            setGraphBarColor([$0.0, $0.1], color: setColor)
+            let viewMutated      = graphViews[$0.mutated]
+            let viewReference    = graphViews[$0.from]
             DispatchQueue.main.async {
-                let view0Height = view0.frame.height
-                let view1Height = view1.frame.height
-                view0.constraints.first(where: { $0.firstAttribute == .height })?.constant = view1Height
-                view1.constraints.first(where: { $0.firstAttribute == .height })?.constant = view0Height
+                let viewReferenceHeight = viewReference.frame.height
+                viewMutated.constraints.first(where: { $0.firstAttribute == .height })?.constant = viewReferenceHeight
             }
         })
+        
+        cancellable6 = self.viewModel.$dataIndexSetForce.sink(receiveValue: { [unowned self] in
+            if (initState) { return }
+            setGraphBarColor([$0.index], color: setColor)
+            let view = graphViews[$0.index]
+            let height = getBarHeight($0.value)
+            DispatchQueue.main.async {
+                view.constraints.first(where: { $0.firstAttribute == .height })?.constant = height
+            }
+        })
+        
+        initState = false
     }
 
     
@@ -90,7 +117,7 @@ class ViewController: UIViewController
         graphView.subviews.forEach { $0.removeFromSuperview() }
         graphViews.removeAll()
         
-        for height in viewModel.dataSource
+        for value in viewModel.dataSource
         {
             // most left (leading) bar
             let leadingBar = prevBar == nil
@@ -103,8 +130,7 @@ class ViewController: UIViewController
             bar.layer.cornerRadius = 60 / CGFloat(viewModel.dataSource.count)
             bar.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
             
-            let topInset = 16.0
-            let barHeight = (graphView.frame.height - topInset) * CGFloat(height) / CGFloat(viewModel.dataSize)
+            let barHeight = getBarHeight(value)
             let leadingAnchor = leadingBar ? graphView.leadingAnchor : prevBar!.trailingAnchor
             
             bar.translatesAutoresizingMaskIntoConstraints = false
@@ -119,11 +145,17 @@ class ViewController: UIViewController
         prevBar?.trailingAnchor.constraint(equalTo: graphView.trailingAnchor, constant: -barSpacing).isActive = true
     }
     
-    private func setGraphBarColor(_ range: Array<Int>, color: UIColor)
+    private func getBarHeight(_ dataValue: Int) -> CGFloat
+    {
+        let topInset = 16.0
+        return (graphView.frame.height - topInset) * CGFloat(dataValue) / CGFloat(viewModel.dataSize)
+    }
+    
+    private func setGraphBarColor(_ range: Set<Int>, color: UIColor)
     {
         DispatchQueue.main.async { [unowned self] in
-            for i in range {
-                graphViews[i].backgroundColor = color
+            for (i, view) in graphViews.enumerated() {
+                view.backgroundColor = range.contains(i) ? color : neutralColor
             }
         }
     }
@@ -148,7 +180,7 @@ class ViewController: UIViewController
     
     @IBAction func onOrderChanged(_ sender: UISegmentedControl)
     {
-        setGraphBarColor([Int](0..<graphViews.count), color: neutralColor)
+        setGraphBarColor([], color: accessColor)
         self.viewModel.orderAscending = sender.selectedSegmentIndex == 0
         let orderText = sender.selectedSegmentIndex == 0 ? "Ascending" : "Descending"
         orderLabel.text = "Order: \(orderText)"
@@ -168,12 +200,12 @@ class ViewController: UIViewController
     
     @IBAction func onMergeSortButton(_ sender: CardButton)
     {
-        self.sortRadioManager.selectedIndex = Sort.merge.rawValue
+        self.sortRadioManager.selectedIndex = Sort.selection.rawValue
     }
     
     @IBAction func onHeapSortButton(_ sender: CardButton)
     {
-        self.sortRadioManager.selectedIndex = Sort.heap.rawValue
+        self.sortRadioManager.selectedIndex = Sort.insertion.rawValue
     }
     
     @IBAction func onQuickSortButton(_ sender: CardButton)
@@ -189,11 +221,11 @@ class ViewController: UIViewController
             case Sort.bubble.rawValue:
                 viewModel.bubbleSort()
                 break
-            case Sort.merge.rawValue:
-                viewModel.mergeSort()
+            case Sort.selection.rawValue:
+                viewModel.selectionSort()
                 break
-            case Sort.heap.rawValue:
-                viewModel.heapSort()
+            case Sort.insertion.rawValue:
+                viewModel.insertionSort()
                 break
             case Sort.quick.rawValue:
                 viewModel.quickSort()

@@ -24,10 +24,16 @@ class ViewModel
     private(set) var dataSourceToggleChanged: Bool = false
     
     @Published
-    private(set) var dataIndexAccessed: Array<Int> = []
+    private(set) var dataIndexAccessed: Set<Int> = []
     
     @Published
-    private(set) var dataIndexSwapped: Array<Int> = []
+    private(set) var dataIndexSwapped: (Int, Int) = (-1, -1)
+    
+    @Published
+    private(set) var dataIndexSetReference: (mutated: Int, from: Int) = (-1, -1)
+    
+    @Published
+    private(set) var dataIndexSetForce: (index: Int, value: Int) = (-1, -1)
     
     @Published
     private(set) var buttonInteractionEnable: Bool = true
@@ -70,36 +76,88 @@ class ViewModel
         sortEnd()
     }
     
-    public func mergeSort()
+    public func selectionSort()
     {
         sortBegin()
+        guard dataSource.count > 1 else { return }
+        for x in 0 ..< dataSource.count - 1
+        {
+            var wanted = x
+            for y in x + 1 ..< dataSource.count
+            {
+                doAccess([y, wanted])
+                if
+                (
+                    orderAscending && dataSource[y] < dataSource[wanted] ||
+                    !orderAscending && dataSource[y] > dataSource[wanted]
+                )
+                { wanted = y }
+            }
+            doAccess([x, wanted])
+            if (x != wanted)
+                { doSwap(x, wanted) }
+        }
         sortEnd()
     }
     
-    public func heapSort()
+    public func insertionSort()
     {
         sortBegin()
+        for x in 1..<dataSize
+        {
+            var y = x
+            let temp = dataSource[y]
+            while (true)
+            {
+                doAccess([y, y - 1])
+                if
+                (
+                    orderAscending && (y <= 0 || temp > dataSource[y - 1]) ||
+                    !orderAscending && (y <= 0 || temp < dataSource[y - 1])
+                )
+                { break }
+                doSetReference(y, y - 1)
+                y -= 1
+            }
+            doSetForce(y, value: temp)
+        }
         sortEnd()
     }
     
     public func quickSort()
     {
         sortBegin()
+        quickSort(startIndex: 0, endIndex: dataSize - 1)
         sortEnd()
     }
     
-    private func doAccess(_ access: Array<Int>)
+    private func doAccess(_ access: Set<Int>)
     {
         dataIndexAccessed = access
         usleep(useconds_t(1000000 / dataSize))
+        dataIndexAccessed = []
     }
     
     private func doSwap(_ a: Int, _ b: Int)
     {
-        dataIndexSwapped = [a, b]
-        let temp = dataSource[a]
+        if (a == b) { return }
+        dataIndexSwapped = (a, b)
+        (dataSource[a], dataSource[b]) = (dataSource[b], dataSource[a])
+        usleep(useconds_t(1000000 / dataSize))
+    }
+    
+    private func doSetReference(_ a: Int, _ b: Int)
+    {
+        if (a == b) { return }
+        dataIndexSetReference = (a, b)
         dataSource[a] = dataSource[b]
-        dataSource[b] = temp
+        usleep(useconds_t(1000000 / dataSize))
+    }
+    
+    private func doSetForce(_ index: Int, value: Int)
+    {
+        dataIndexSetForce = (index, value)
+        dataSource[index] = value
         usleep(useconds_t(1000000 / dataSize))
     }
     
@@ -110,8 +168,39 @@ class ViewModel
     
     private func sortEnd()
     {
-        dataIndexAccessed = []
-        dataIndexSwapped = []
         buttonInteractionEnable = true
+    }
+}
+
+
+// MARK: Quick Sort
+extension ViewModel
+{
+    private func quickSort(startIndex: Int, endIndex: Int)
+    {
+        if (startIndex >= endIndex) { return }
+        let placedItemIndex = partition(startIndex: startIndex, endIndex: endIndex)
+        quickSort(startIndex: startIndex, endIndex: placedItemIndex-1)
+        quickSort(startIndex: placedItemIndex+1, endIndex: endIndex)
+    }
+    
+    private func partition(startIndex: Int, endIndex: Int) -> Int
+    {
+        var q = startIndex
+        for index in startIndex..<endIndex
+        {
+            doAccess([q, endIndex])
+            if
+            (
+                orderAscending && dataSource[index] < dataSource[endIndex] ||
+                !orderAscending && dataSource[index] > dataSource[endIndex]
+            )
+            {
+                doSwap(q, index)
+                q += 1
+            }
+        }
+        doSwap(q, endIndex)
+        return q
     }
 }

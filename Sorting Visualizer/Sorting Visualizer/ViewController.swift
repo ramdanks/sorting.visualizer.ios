@@ -9,9 +9,13 @@ import UIKit
 
 class ViewController: UIViewController
 {
+    enum Sort: Int { case bubble = 0, merge = 1, heap = 2, quick = 3 }
+    
     var viewModel: ViewModel!
     
+    var sortRadioManager: RadioButtonManager!
     var graphViews: Array<UIView> = []
+    
     let dataSizeMax = 20
     let dataSizeMin = 6
     
@@ -27,23 +31,31 @@ class ViewController: UIViewController
     @IBOutlet weak var orderLabel: UILabel!
     @IBOutlet weak var orderSegmented: UISegmentedControl!
     
-    let neutralColor: UIColor = .systemBlue
-    let accessColor: UIColor = .systemRed
-    let swapColor: UIColor = .systemYellow
+    @IBOutlet weak var bubbleCardButton: CardButton!
+    @IBOutlet weak var mergeCardButton: CardButton!
+    @IBOutlet weak var heapCardButton: CardButton!
+    @IBOutlet weak var quickCardButton: CardButton!
+    
+    let neutralColor: UIColor   = .systemBlue
+    let accessColor: UIColor    = .systemRed
+    let swapColor: UIColor      = .systemYellow
+    let doneColor: UIColor      = .systemGreen
     
     override func viewDidLoad()
     {
         super.viewDidLoad()
         
-        self.viewModel = ViewModel(dataSize: dataSizeMin)
         self.dataSizeSlider.value = 0.0
+        self.viewModel = ViewModel(dataSize: dataSizeMin)
+        self.sortRadioManager = RadioButtonManager([bubbleCardButton, mergeCardButton, heapCardButton, quickCardButton])
         
         cancellable4 = self.viewModel.$buttonInteractionEnable.sink(receiveValue: { enable in
             DispatchQueue.main.async { [unowned self] in
-                dataSizeSlider.isEnabled = enable
-                randomizeButton.isEnabled = enable
-                orderSegmented.isEnabled = enable
-                playButton.isEnabled = enable
+                dataSizeSlider.isEnabled    = enable
+                randomizeButton.isEnabled   = enable
+                orderSegmented.isEnabled    = enable
+                playButton.isEnabled        = enable
+                sortRadioManager.views.forEach { $0.view.isEnabled = enable }
             }
         })
         cancellable = self.viewModel.$dataSourceToggleChanged.sink(receiveValue: { [unowned self] _ in draw() })
@@ -139,11 +151,48 @@ class ViewController: UIViewController
         self.viewModel.randomize()
     }
     
+    @IBAction func onBubbleSortButton(_ sender: CardButton)
+    {
+        self.sortRadioManager.selectedIndex = Sort.bubble.rawValue
+    }
+    
+    @IBAction func onMergeSortButton(_ sender: CardButton)
+    {
+        self.sortRadioManager.selectedIndex = Sort.merge.rawValue
+    }
+    
+    @IBAction func onHeapSortButton(_ sender: CardButton)
+    {
+        self.sortRadioManager.selectedIndex = Sort.heap.rawValue
+    }
+    
+    @IBAction func onQuickSortButton(_ sender: CardButton)
+    {
+        self.sortRadioManager.selectedIndex = Sort.quick.rawValue
+    }
+    
     @IBAction func onPlayButton(_ sender: UIButton)
     {
         DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
-            self.viewModel.sort()
-            DispatchQueue.main.async { [unowned self] in graphViews.forEach { $0.backgroundColor = .systemGreen } }
+            switch (sortRadioManager.selectedIndex)
+            {
+            case Sort.bubble.rawValue:
+                viewModel.bubbleSort()
+                break
+            case Sort.merge.rawValue:
+                viewModel.mergeSort()
+                break
+            case Sort.heap.rawValue:
+                viewModel.heapSort()
+                break
+            case Sort.quick.rawValue:
+                viewModel.quickSort()
+                break
+            default:
+                break;
+            }
+            // mark done if sort process has been completed
+            DispatchQueue.main.async { [unowned self] in graphViews.forEach { $0.backgroundColor = doneColor } }
         }
     }
 }

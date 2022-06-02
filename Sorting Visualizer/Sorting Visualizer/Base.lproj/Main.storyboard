@@ -90,14 +90,14 @@
                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nan-8y-97Z">
                                         <rect key="frame" x="32" y="614" width="326" height="120"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Data Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1fK-wM-ESF">
-                                                <rect key="frame" x="16" y="15.999999999999998" width="72" height="20.333333333333329"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Data Amount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1fK-wM-ESF">
+                                                <rect key="frame" x="16" y="16" width="100" height="21"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="GD9-pg-L4S">
-                                                <rect key="frame" x="14" y="52.333333333333371" width="298" height="52.666666666666657"/>
+                                                <rect key="frame" x="14" y="45" width="298" height="68"/>
                                                 <connections>
                                                     <action selector="onDataSizeChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="4pD-GF-5GP"/>
                                                 </connections>
@@ -108,9 +108,9 @@
                                             <constraint firstAttribute="trailing" secondItem="GD9-pg-L4S" secondAttribute="trailing" constant="16" id="NdY-a2-Eiq"/>
                                             <constraint firstItem="GD9-pg-L4S" firstAttribute="leading" secondItem="Nan-8y-97Z" secondAttribute="leading" constant="16" id="NlJ-RA-GmQ"/>
                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="1fK-wM-ESF" secondAttribute="trailing" constant="20" symbolic="YES" id="PPM-db-L1I"/>
-                                            <constraint firstAttribute="bottom" secondItem="GD9-pg-L4S" secondAttribute="bottom" constant="16" id="THc-5u-H1q"/>
+                                            <constraint firstAttribute="bottom" secondItem="GD9-pg-L4S" secondAttribute="bottom" constant="8" id="THc-5u-H1q"/>
                                             <constraint firstAttribute="height" constant="120" id="aaJ-hT-0A7"/>
-                                            <constraint firstItem="GD9-pg-L4S" firstAttribute="top" secondItem="1fK-wM-ESF" secondAttribute="bottom" constant="16" id="aah-w2-28t"/>
+                                            <constraint firstItem="GD9-pg-L4S" firstAttribute="top" secondItem="1fK-wM-ESF" secondAttribute="bottom" constant="8" id="aah-w2-28t"/>
                                             <constraint firstItem="1fK-wM-ESF" firstAttribute="leading" secondItem="Nan-8y-97Z" secondAttribute="leading" constant="16" id="hRD-bF-gjl"/>
                                             <constraint firstItem="1fK-wM-ESF" firstAttribute="top" secondItem="Nan-8y-97Z" secondAttribute="top" constant="16" id="ru4-cw-4MB"/>
                                         </constraints>
@@ -120,9 +120,9 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WzH-lL-NQA">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WzH-lL-NQA" customClass="CardButton" customModule="Sorting_Visualizer" customModuleProvider="target">
                                         <rect key="frame" x="32.000000000000007" y="520.66666666666663" width="69.666666666666686" height="69.333333333333371"/>
-                                        <color key="backgroundColor" systemColor="systemBrownColor"/>
+                                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="WzH-lL-NQA" secondAttribute="height" multiplier="1:1" id="kVV-2q-T8Y"/>
                                         </constraints>
@@ -130,16 +130,26 @@
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="16"/>
                                             </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="bubble.left.and.bubble.right.fill" catalog="system"/>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="title" value="Bubble"/>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="onBubbleSortButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mR1-GN-tan"/>
+                                        </connections>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rUu-57-duS">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rUu-57-duS" customClass="CardButton" customModule="Sorting_Visualizer" customModuleProvider="target">
                                         <rect key="frame" x="117.66666666666669" y="520.66666666666663" width="69.333333333333314" height="69.333333333333371"/>
-                                        <color key="backgroundColor" systemColor="systemBrownColor"/>
+                                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="16"/>
                                             </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="rectangle.stack.fill" catalog="system"/>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="title" value="Merge"/>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="onMergeSortButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="kyy-RM-2qj"/>
+                                        </connections>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorting Visualizer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZPd-dD-lnG">
                                         <rect key="frame" x="32" y="32" width="145" height="21"/>
@@ -161,23 +171,33 @@
                                             <action selector="onPlayButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="me5-e5-WI5"/>
                                         </connections>
                                     </button>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="m9H-Uh-FdC">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="m9H-Uh-FdC" customClass="CardButton" customModule="Sorting_Visualizer" customModuleProvider="target">
                                         <rect key="frame" x="203" y="520.66666666666663" width="69.666666666666686" height="69.333333333333371"/>
-                                        <color key="backgroundColor" systemColor="systemBrownColor"/>
+                                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="16"/>
                                             </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="square.split.2x2.fill" catalog="system"/>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="title" value="Heap"/>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="onHeapSortButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="opu-DW-bww"/>
+                                        </connections>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9vw-e9-r8P">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9vw-e9-r8P" customClass="CardButton" customModule="Sorting_Visualizer" customModuleProvider="target">
                                         <rect key="frame" x="288.66666666666669" y="520.66666666666663" width="69.333333333333314" height="69.333333333333371"/>
-                                        <color key="backgroundColor" systemColor="systemBrownColor"/>
+                                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="16"/>
                                             </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="title" value="Quick"/>
+                                            <userDefinedRuntimeAttribute type="image" keyPath="image" value="hourglass" catalog="system"/>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="onQuickSortButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZJV-Lg-Mvi"/>
+                                        </connections>
                                     </view>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="EMB-i9-1IX">
                                         <rect key="frame" x="32" y="85" width="326" height="32"/>
@@ -242,11 +262,15 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="bubbleCardButton" destination="WzH-lL-NQA" id="5TV-bY-PYv"/>
                         <outlet property="dataSizeSlider" destination="GD9-pg-L4S" id="3Db-cs-YNq"/>
                         <outlet property="graphView" destination="QZk-r7-pBm" id="aC4-R9-PkU"/>
+                        <outlet property="heapCardButton" destination="m9H-Uh-FdC" id="xXU-An-Kn5"/>
+                        <outlet property="mergeCardButton" destination="rUu-57-duS" id="cp7-Yh-HhE"/>
                         <outlet property="orderLabel" destination="WI1-zv-xFw" id="DAB-hm-4J4"/>
                         <outlet property="orderSegmented" destination="EMB-i9-1IX" id="E9w-7L-fj7"/>
                         <outlet property="playButton" destination="5GL-86-EoA" id="2PQ-ae-C6o"/>
+                        <outlet property="quickCardButton" destination="9vw-e9-r8P" id="CVF-gB-ih1"/>
                         <outlet property="randomizeButton" destination="mqe-7o-JJS" id="fnS-eo-lLm"/>
                     </connections>
                 </viewController>
@@ -258,15 +282,16 @@
     <resources>
         <image name="arrow.down.square.fill" catalog="system" width="128" height="114"/>
         <image name="arrow.up.square.fill" catalog="system" width="128" height="114"/>
+        <image name="bubble.left.and.bubble.right.fill" catalog="system" width="128" height="97"/>
+        <image name="hourglass" catalog="system" width="102" height="128"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
+        <image name="rectangle.stack.fill" catalog="system" width="128" height="122"/>
+        <image name="square.split.2x2.fill" catalog="system" width="128" height="114"/>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBrownColor">
-            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tertiarySystemFillColor">
             <color red="0.46274509803921571" green="0.46274509803921571" blue="0.50196078431372548" alpha="0.12" colorSpace="custom" customColorSpace="sRGB"/>

@@ -46,32 +46,67 @@ class ViewModel
         dataSourceToggleChanged = !dataSourceToggleChanged
     }
     
-    public func sort()
+    public func bubbleSort()
     {
-        buttonInteractionEnable = false
-        let sleepTimeMicro = useconds_t(1000000 / dataSize)
-        
+        sortBegin()
         for i in 0..<dataSize
         {
             for j in i+1..<dataSize
             {
-                dataIndexAccessed = [i, j]
-                usleep(sleepTimeMicro)
+                doAccess([i, j])
                 if
                 (
                     orderAscending && dataSource[i] > dataSource[j] ||
                     !orderAscending && dataSource[i] < dataSource[j]
                 )
                 {
-                    dataIndexSwapped = [i, j]
-                    let temp = dataSource[i]
-                    dataSource[i] = dataSource[j]
-                    dataSource[j] = temp
-                    usleep(sleepTimeMicro)
+                    doSwap(i, j)
                 }
             }
         }
-        
+        sortEnd()
+    }
+    
+    public func mergeSort()
+    {
+        sortBegin()
+        sortEnd()
+    }
+    
+    public func heapSort()
+    {
+        sortBegin()
+        sortEnd()
+    }
+    
+    public func quickSort()
+    {
+        sortBegin()
+        sortEnd()
+    }
+    
+    private func doAccess(_ access: Array<Int>)
+    {
+        dataIndexAccessed = access
+        usleep(useconds_t(1000000 / dataSize))
+    }
+    
+    private func doSwap(_ a: Int, _ b: Int)
+    {
+        dataIndexSwapped = [a, b]
+        let temp = dataSource[a]
+        dataSource[a] = dataSource[b]
+        dataSource[b] = temp
+        usleep(useconds_t(1000000 / dataSize))
+    }
+    
+    private func sortBegin()
+    {
+        buttonInteractionEnable = false
+    }
+    
+    private func sortEnd()
+    {
         dataIndexAccessed = []
         dataIndexSwapped = []
         buttonInteractionEnable = true

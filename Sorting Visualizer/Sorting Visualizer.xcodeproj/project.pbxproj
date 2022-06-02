@@ -14,6 +14,9 @@
 		3F2995BD284522B70071DD5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F2995BC284522B70071DD5D /* Assets.xcassets */; };
 		3F2995C0284522B70071DD5D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F2995BE284522B70071DD5D /* LaunchScreen.storyboard */; };
 		3F93FBB02845B0DD00563BBA /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F93FBAF2845B0DD00563BBA /* ViewModel.swift */; };
+		3FBDE5D92848A0510080472C /* RadioButtonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBDE5D82848A0510080472C /* RadioButtonManager.swift */; };
+		3FBDE5DB2848AABB0080472C /* CardButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3FBDE5DA2848AABB0080472C /* CardButton.xib */; };
+		3FBDE5DD2848AAC60080472C /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBDE5DC2848AAC60080472C /* CardButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +29,9 @@
 		3F2995BF284522B70071DD5D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3F2995C1284522B70071DD5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3F93FBAF2845B0DD00563BBA /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		3FBDE5D82848A0510080472C /* RadioButtonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButtonManager.swift; sourceTree = "<group>"; };
+		3FBDE5DA2848AABB0080472C /* CardButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardButton.xib; sourceTree = "<group>"; };
+		3FBDE5DC2848AAC60080472C /* CardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +66,11 @@
 			children = (
 				3F2995B3284522B60071DD5D /* AppDelegate.swift */,
 				3F2995B5284522B60071DD5D /* SceneDelegate.swift */,
+				3FBDE5D82848A0510080472C /* RadioButtonManager.swift */,
 				3F93FBAF2845B0DD00563BBA /* ViewModel.swift */,
 				3F2995B7284522B60071DD5D /* ViewController.swift */,
+				3FBDE5DC2848AAC60080472C /* CardButton.swift */,
+				3FBDE5DA2848AABB0080472C /* CardButton.xib */,
 				3F2995B9284522B60071DD5D /* Main.storyboard */,
 				3F2995BC284522B70071DD5D /* Assets.xcassets */,
 				3F2995BE284522B70071DD5D /* LaunchScreen.storyboard */,
@@ -129,6 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F2995C0284522B70071DD5D /* LaunchScreen.storyboard in Resources */,
+				3FBDE5DB2848AABB0080472C /* CardButton.xib in Resources */,
 				3F2995BD284522B70071DD5D /* Assets.xcassets in Resources */,
 				3F2995BB284522B60071DD5D /* Main.storyboard in Resources */,
 			);
@@ -142,7 +152,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F2995B8284522B60071DD5D /* ViewController.swift in Sources */,
+				3FBDE5DD2848AAC60080472C /* CardButton.swift in Sources */,
 				3F2995B4284522B60071DD5D /* AppDelegate.swift in Sources */,
+				3FBDE5D92848A0510080472C /* RadioButtonManager.swift in Sources */,
 				3F93FBB02845B0DD00563BBA /* ViewModel.swift in Sources */,
 				3F2995B6284522B60071DD5D /* SceneDelegate.swift in Sources */,
 			);

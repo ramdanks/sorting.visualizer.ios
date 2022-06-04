@@ -15,6 +15,7 @@ class ViewController: UIViewController
     
     // enum provide an index for Segmented Control (See Storyboard)
     enum ThemeStyle: Int { case light = 0, dark = 1 }
+    var themeOverride = false
     
     // MARK: View Model and Data Binding
     var initState: Bool = true
@@ -130,16 +131,16 @@ class ViewController: UIViewController
     
     public func adjustThemeSegmentedControl()
     {
+        if (themeOverride) { return }
         let currStyle = UIScreen.main.traitCollection.userInterfaceStyle
         themeSegmentedControl.selectedSegmentIndex = currStyle == .light ?
             ThemeStyle.light.rawValue : ThemeStyle.dark.rawValue
-        onThemeChanged(themeSegmentedControl)
     }
     
     @IBAction func onThemeChanged(_ sender: UISegmentedControl)
     {
-        let style: UIUserInterfaceStyle = sender.selectedSegmentIndex == 0 ? .light : .dark
-        self.overrideUserInterfaceStyle = style
+        self.themeOverride = true
+        self.overrideUserInterfaceStyle = sender.selectedSegmentIndex == ThemeStyle.light.rawValue ? .light : .dark
         self.setNeedsStatusBarAppearanceUpdate()
     }
     

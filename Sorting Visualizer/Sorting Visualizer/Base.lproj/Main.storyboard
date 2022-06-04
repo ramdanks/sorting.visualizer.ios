@@ -148,7 +148,7 @@
                                             <userDefinedRuntimeAttribute type="string" keyPath="title" value="Select"/>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
-                                            <action selector="onMergeSortButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="kyy-RM-2qj"/>
+                                            <action selector="onSelectionSortButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="m6b-Fd-74h"/>
                                         </connections>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorting Visualizer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZPd-dD-lnG">
@@ -272,6 +272,7 @@
                         <outlet property="playButton" destination="5GL-86-EoA" id="2PQ-ae-C6o"/>
                         <outlet property="quickCardButton" destination="9vw-e9-r8P" id="CVF-gB-ih1"/>
                         <outlet property="randomizeButton" destination="mqe-7o-JJS" id="fnS-eo-lLm"/>
+                        <outlet property="themeSegmentedControl" destination="G4t-Je-0Oe" id="Gfq-yw-YdG"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

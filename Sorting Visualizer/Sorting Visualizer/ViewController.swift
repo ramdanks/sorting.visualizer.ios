@@ -5,31 +5,36 @@
 //  Created by Ramadhan Kalih Sewu on 30/05/22.
 //
 
+import Combine
 import UIKit
 
 class ViewController: UIViewController
 {
+    // enum provide an index for sortRadioManager
     enum Sort: Int { case bubble = 0, selection = 1, insertion = 2, quick = 3 }
     
+    // enum provide an index for Segmented Control (See Storyboard)
+    enum ThemeStyle: Int { case light = 0, dark = 1 }
+    
+    // MARK: View Model and Data Binding
     var initState: Bool = true
     var viewModel: ViewModel!
+    var viewModelSubscribers: [AnyCancellable]?
     
+    // MARK: Sorting Content View and Manager
     var sortRadioManager: RadioButtonManager!
     var graphViews: Array<UIView> = []
     
+    // MARK: Graph Data Size
     let dataSizeMax = 20
     let dataSizeMin = 6
     
-    var cancellable: AnyObject!
-    var cancellable2: AnyObject!
-    var cancellable3: AnyObject!
-    var cancellable4: AnyObject!
-    var cancellable5: AnyObject!
-    var cancellable6: AnyObject!
-    
+    // MARK: Haptic Feedback
     let selectionFeedbackGenerator = UISelectionFeedbackGenerator()
     let buttonFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
     
+    // MARK: IBOutlet
+    @IBOutlet weak var themeSegmentedControl: UISegmentedControl!
     @IBOutlet weak var dataSizeSlider: UISlider!
     @IBOutlet weak var graphView: UIView!
     @IBOutlet weak var randomizeButton: UIButton!
@@ -42,9 +47,10 @@ class ViewController: UIViewController
     @IBOutlet weak var heapCardButton: CardButton!
     @IBOutlet weak var quickCardButton: CardButton!
     
+    // MARK: Bar Color
     let neutralColor: UIColor   = .systemBlue
     let accessColor: UIColor    = .systemRed
-    let setColor: UIColor      = .systemYellow
+    let setColor: UIColor       = .systemYellow
     let doneColor: UIColor      = .systemGreen
     
     override func viewDidLoad()
@@ -53,61 +59,165 @@ class ViewController: UIViewController
         
         self.dataSizeSlider.value = 0.0
         self.viewModel = ViewModel(dataSize: dataSizeMin)
-        self.sortRadioManager = RadioButtonManager([bubbleCardButton, mergeCardButton, heapCardButton, quickCardButton])
         
-        cancellable = self.viewModel.$dataSourceToggleChanged.sink(receiveValue: { [unowned self] _ in draw() })
+        // arranged based on enum Sort
+        self.sortRadioManager = RadioButtonManager([
+            bubbleCardButton,
+            mergeCardButton,
+            heapCardButton,
+            quickCardButton
+        ])
         
-        cancellable2 = self.viewModel.$dataIndexAccessed.sink(receiveValue: { [unowned self] in
-            setGraphBarColor($0, color: accessColor)
-        })
+        // current view use system color, so the selected segmented control
+        // needs to adjust based on system color (on first load)
+        let currStyle = self.traitCollection.userInterfaceStyle
+        self.themeSegmentedControl.selectedSegmentIndex = currStyle == .light ?
+            ThemeStyle.light.rawValue : ThemeStyle.dark.rawValue
         
-        cancellable3 = self.viewModel.$dataIndexSwapped.sink(receiveValue: { [unowned self] in
-            if (initState) { return }
-            setGraphBarColor([$0.0, $0.1], color: setColor)
-            let view0 = graphViews[$0.0]
-            let view1 = graphViews[$0.1]
-            DispatchQueue.main.async {
-                let view0Height = view0.frame.height
-                let view1Height = view1.frame.height
-                view0.constraints.first(where: { $0.firstAttribute == .height })?.constant = view1Height
-                view1.constraints.first(where: { $0.firstAttribute == .height })?.constant = view0Height
-            }
-        })
-        
-        cancellable4 = self.viewModel.$buttonInteractionEnable.sink(receiveValue: { enable in
-            DispatchQueue.main.async { [unowned self] in
-                dataSizeSlider.isEnabled    = enable
-                randomizeButton.isEnabled   = enable
-                orderSegmented.isEnabled    = enable
-                playButton.isEnabled        = enable
-                sortRadioManager.views.forEach { $0.view.isEnabled = enable }
-            }
-        })
-        
-        cancellable5 = self.viewModel.$dataIndexSetReference.sink(receiveValue: { [unowned self] in
-            if (initState) { return }
-            setGraphBarColor([$0.0, $0.1], color: setColor)
-            let viewMutated      = graphViews[$0.mutated]
-            let viewReference    = graphViews[$0.from]
-            DispatchQueue.main.async {
-                let viewReferenceHeight = viewReference.frame.height
-                viewMutated.constraints.first(where: { $0.firstAttribute == .height })?.constant = viewReferenceHeight
-            }
-        })
-        
-        cancellable6 = self.viewModel.$dataIndexSetForce.sink(receiveValue: { [unowned self] in
-            if (initState) { return }
-            setGraphBarColor([$0.index], color: setColor)
-            let view = graphViews[$0.index]
-            let height = getBarHeight($0.value)
-            DispatchQueue.main.async {
-                view.constraints.first(where: { $0.firstAttribute == .height })?.constant = height
-            }
-        })
-        
+        // provide data binding between view model to our view controller
+        self.viewModelSubscribers = [
+            // when the data source changed it's value
+            self.viewModel.$dataSourceToggleChanged.sink(receiveValue: { [unowned self] _ in
+                // view needs to be updated on main thread
+                DispatchQueue.main.async { [unowned self] in draw() }
+            }),
+            // data that currently accessed by the sort function
+            self.viewModel.$dataIndexAccessed.sink(receiveValue: { [unowned self] value in
+                // view needs to be updated on main thread
+                DispatchQueue.main.async { [unowned self] in setGraphBarColor(value, color: accessColor) }
+            }),
+            // data that needs to be swapped by the sort function
+            self.viewModel.$dataIndexSwapped.sink(receiveValue: { [unowned self] value in
+                if (initState) { return }
+                // swap the bar height (view needs to be updated on main thread)
+                DispatchQueue.main.async { [unowned self] in
+                    let view0 = graphViews[value.0]
+                    let view1 = graphViews[value.1]
+                    view0.constraints.first(where: { $0.firstAttribute == .height })?.constant = view1.frame.height
+                    view1.constraints.first(where: { $0.firstAttribute == .height })?.constant = view0.frame.height
+                    setGraphBarColor([value.0, value.1], color: setColor)
+                }
+            }),
+            // a specific data that needs to be set and equal with the reference data
+            self.viewModel.$dataIndexSetReference.sink(receiveValue: { [unowned self] value in
+                if (initState) { return }
+                // view needs to be updated on main thread
+                DispatchQueue.main.async { [unowned self] in
+                    let view = graphViews[value.mutated]
+                    let viewReferenceHeight = graphViews[value.from].frame.height
+                    view.constraints.first(where: { $0.firstAttribute == .height })?.constant = viewReferenceHeight
+                    setGraphBarColor([value.mutated, value.from], color: setColor)
+                }
+            }),
+            // a specific data that needs to be set with some value
+            self.viewModel.$dataIndexSetForce.sink(receiveValue: { [unowned self] value in
+                if (initState) { return }
+                // view needs to be updated on main thread
+                DispatchQueue.main.async { [unowned self] in
+                    let view = graphViews[value.index]
+                    view.constraints.first(where: { $0.firstAttribute == .height })?.constant = getBarHeight(value.value)
+                    setGraphBarColor([value.index], color: setColor)
+                }
+            }),
+            // view model wants to enable or disable user input (because sort is in progress / done)
+            self.viewModel.$buttonInteractionEnable.sink(receiveValue: { enable in
+                // view needs to be updated on main thread
+                DispatchQueue.main.async { [unowned self] in
+                    dataSizeSlider.isEnabled    = enable
+                    randomizeButton.isEnabled   = enable
+                    orderSegmented.isEnabled    = enable
+                    playButton.isEnabled        = enable
+                    sortRadioManager.views.forEach { $0.view.isEnabled = enable }
+                }
+            }),
+        ]
         initState = false
     }
-
+    
+    @IBAction func onThemeChanged(_ sender: UISegmentedControl)
+    {
+        let style: UIUserInterfaceStyle = sender.selectedSegmentIndex == 0 ? .light : .dark
+        self.overrideUserInterfaceStyle = style
+        self.setNeedsStatusBarAppearanceUpdate()
+    }
+    
+    @IBAction func onDataSizeChanged(_ sender: UISlider)
+    {
+        let range = dataSizeMax - dataSizeMin
+        let clippedSize = dataSizeMin + Int(sender.value * Float(range))
+        if (viewModel.dataSize != clippedSize)
+        {
+            viewModel.dataSize = clippedSize
+            selectionFeedbackGenerator.selectionChanged()
+        }
+    }
+    
+    @IBAction func onOrderChanged(_ sender: UISegmentedControl)
+    {
+        setGraphBarColor([], color: accessColor)
+        self.viewModel.orderAscending = sender.selectedSegmentIndex == 0
+        let orderText = sender.selectedSegmentIndex == 0 ? "Ascending" : "Descending"
+        orderLabel.text = "Order: \(orderText)"
+    }
+    
+    @IBAction func onRandomizeButton(_ sender: UIButton)
+    {
+        buttonFeedbackGenerator.prepare()
+        self.viewModel.randomize()
+        buttonFeedbackGenerator.impactOccurred()
+    }
+    
+    //MARK: Radio Button Selection
+    
+    @IBAction func onBubbleSortButton(_ sender: CardButton)
+    {
+        self.sortRadioManager.selectedIndex = Sort.bubble.rawValue
+    }
+    
+    @IBAction func onSelectionSortButton(_ sender: CardButton)
+    {
+        self.sortRadioManager.selectedIndex = Sort.selection.rawValue
+    }
+    
+    @IBAction func onHeapSortButton(_ sender: CardButton)
+    {
+        self.sortRadioManager.selectedIndex = Sort.insertion.rawValue
+    }
+    
+    @IBAction func onQuickSortButton(_ sender: CardButton)
+    {
+        self.sortRadioManager.selectedIndex = Sort.quick.rawValue
+    }
+    
+    // MARK: Play Button
+    
+    @IBAction func onPlayButton(_ sender: UIButton)
+    {
+        DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
+            switch (sortRadioManager.selectedIndex)
+            {
+            case Sort.bubble.rawValue:
+                viewModel.bubbleSort()
+                break
+            case Sort.selection.rawValue:
+                viewModel.selectionSort()
+                break
+            case Sort.insertion.rawValue:
+                viewModel.insertionSort()
+                break
+            case Sort.quick.rawValue:
+                viewModel.quickSort()
+                break
+            default:
+                break;
+            }
+            // mark done if sort process has been completed
+            // view needs to be updated on main thread
+            DispatchQueue.main.async { [unowned self] in graphViews.forEach { $0.backgroundColor = doneColor } }
+        }
+    }
+    
+    // MARK: Internal Function
     
     private func draw()
     {
@@ -153,88 +263,8 @@ class ViewController: UIViewController
     
     private func setGraphBarColor(_ range: Set<Int>, color: UIColor)
     {
-        DispatchQueue.main.async { [unowned self] in
-            for (i, view) in graphViews.enumerated() {
-                view.backgroundColor = range.contains(i) ? color : neutralColor
-            }
-        }
-    }
-    
-    @IBAction func onThemeChanged(_ sender: UISegmentedControl)
-    {
-        let style: UIUserInterfaceStyle = sender.selectedSegmentIndex == 0 ? .light : .dark
-        self.overrideUserInterfaceStyle = style
-        self.setNeedsStatusBarAppearanceUpdate()
-    }
-    
-    @IBAction func onDataSizeChanged(_ sender: UISlider)
-    {
-        let range = dataSizeMax - dataSizeMin
-        let clippedSize = dataSizeMin + Int(sender.value * Float(range))
-        if (viewModel.dataSize != clippedSize)
-        {
-            viewModel.dataSize = clippedSize
-            selectionFeedbackGenerator.selectionChanged()
-        }
-    }
-    
-    @IBAction func onOrderChanged(_ sender: UISegmentedControl)
-    {
-        setGraphBarColor([], color: accessColor)
-        self.viewModel.orderAscending = sender.selectedSegmentIndex == 0
-        let orderText = sender.selectedSegmentIndex == 0 ? "Ascending" : "Descending"
-        orderLabel.text = "Order: \(orderText)"
-    }
-    
-    @IBAction func onRandomizeButton(_ sender: UIButton)
-    {
-        buttonFeedbackGenerator.prepare()
-        self.viewModel.randomize()
-        buttonFeedbackGenerator.impactOccurred()
-    }
-    
-    @IBAction func onBubbleSortButton(_ sender: CardButton)
-    {
-        self.sortRadioManager.selectedIndex = Sort.bubble.rawValue
-    }
-    
-    @IBAction func onMergeSortButton(_ sender: CardButton)
-    {
-        self.sortRadioManager.selectedIndex = Sort.selection.rawValue
-    }
-    
-    @IBAction func onHeapSortButton(_ sender: CardButton)
-    {
-        self.sortRadioManager.selectedIndex = Sort.insertion.rawValue
-    }
-    
-    @IBAction func onQuickSortButton(_ sender: CardButton)
-    {
-        self.sortRadioManager.selectedIndex = Sort.quick.rawValue
-    }
-    
-    @IBAction func onPlayButton(_ sender: UIButton)
-    {
-        DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
-            switch (sortRadioManager.selectedIndex)
-            {
-            case Sort.bubble.rawValue:
-                viewModel.bubbleSort()
-                break
-            case Sort.selection.rawValue:
-                viewModel.selectionSort()
-                break
-            case Sort.insertion.rawValue:
-                viewModel.insertionSort()
-                break
-            case Sort.quick.rawValue:
-                viewModel.quickSort()
-                break
-            default:
-                break;
-            }
-            // mark done if sort process has been completed
-            DispatchQueue.main.async { [unowned self] in graphViews.forEach { $0.backgroundColor = doneColor } }
+        for (i, view) in graphViews.enumerated() {
+            view.backgroundColor = range.contains(i) ? color : neutralColor
         }
     }
 }

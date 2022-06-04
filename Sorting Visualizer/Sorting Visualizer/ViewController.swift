@@ -131,8 +131,9 @@ class ViewController: UIViewController
     public func adjustThemeSegmentedControl()
     {
         let currStyle = UIScreen.main.traitCollection.userInterfaceStyle
-        self.themeSegmentedControl.selectedSegmentIndex = currStyle == .light ?
+        themeSegmentedControl.selectedSegmentIndex = currStyle == .light ?
             ThemeStyle.light.rawValue : ThemeStyle.dark.rawValue
+        onThemeChanged(themeSegmentedControl)
     }
     
     @IBAction func onThemeChanged(_ sender: UISegmentedControl)

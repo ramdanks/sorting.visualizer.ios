@@ -68,12 +68,6 @@ class ViewController: UIViewController
             quickCardButton
         ])
         
-        // current view use system color, so the selected segmented control
-        // needs to adjust based on system color (on first load)
-        let currStyle = self.traitCollection.userInterfaceStyle
-        self.themeSegmentedControl.selectedSegmentIndex = currStyle == .light ?
-            ThemeStyle.light.rawValue : ThemeStyle.dark.rawValue
-        
         // provide data binding between view model to our view controller
         self.viewModelSubscribers = [
             // when the data source changed it's value
@@ -132,6 +126,13 @@ class ViewController: UIViewController
             }),
         ]
         initState = false
+    }
+    
+    public func adjustThemeSegmentedControl()
+    {
+        let currStyle = UIScreen.main.traitCollection.userInterfaceStyle
+        self.themeSegmentedControl.selectedSegmentIndex = currStyle == .light ?
+            ThemeStyle.light.rawValue : ThemeStyle.dark.rawValue
     }
     
     @IBAction func onThemeChanged(_ sender: UISegmentedControl)
